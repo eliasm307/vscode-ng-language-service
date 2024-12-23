@@ -209,6 +209,7 @@ export class Session {
     conn.onSignatureHelp(p => this.onSignatureHelp(p));
     conn.onCodeAction(p => this.onCodeAction(p));
     conn.onCodeActionResolve(async p => await this.onCodeActionResolve(p));
+    conn.onDocumentSymbol((p) => this.onDocumentSymbol(p));
   }
 
   private onCodeAction(params: lsp.CodeActionParams): lsp.CodeAction[]|null {
@@ -783,6 +784,7 @@ export class Session {
           prepareProvider: true,
         },
         hoverProvider: true,
+        // documentSymbolProvider: true,
         signatureHelpProvider: {
           triggerCharacters: ['(', ','],
           retriggerCharacters: [','],
@@ -961,6 +963,7 @@ export class Session {
       return null;
     }
 
+
     const clientSupportsLocationLinks =
         this.clientCapabilities.textDocument?.definition?.linkSupport ?? false;
 
@@ -984,7 +987,7 @@ export class Session {
     if (!definitions) {
       return null;
     }
-
+    debugger
     const clientSupportsLocationLinks =
         this.clientCapabilities.textDocument?.typeDefinition?.linkSupport ?? false;
 
@@ -1067,6 +1070,7 @@ export class Session {
     if (references === undefined) {
       return null;
     }
+    debugger
     return references.map(ref => {
       const scriptInfo = this.projectService.getScriptInfo(ref.fileName);
       const range = scriptInfo ? tsTextSpanToLspRange(scriptInfo, ref.textSpan) : EMPTY_RANGE;
@@ -1172,6 +1176,7 @@ export class Session {
     if (!isNgLanguageService(languageService)) {
       return null;
     }
+
     return {
       languageService,
       scriptInfo,
@@ -1189,6 +1194,7 @@ export class Session {
     if (!info) {
       return null;
     }
+    debugger
     const {kind, kindModifiers, textSpan, displayParts, documentation, tags} = info;
     let desc = kindModifiers ? kindModifiers + ' ' : '';
     if (displayParts && displayParts.length > 0) {
@@ -1209,6 +1215,23 @@ export class Session {
       contents,
       range: tsTextSpanToLspRange(scriptInfo, textSpan),
     };
+  }
+
+  private onDocumentSymbol(params: lsp.DocumentSymbolParams): lsp.DocumentSymbol[]|null {
+    const lsInfo = this.getLSAndScriptInfo(params.textDocument);
+    if (lsInfo === null) {
+      return null;
+    }
+
+    const componentLocations =
+        lsInfo.languageService.getComponentLocationsForTemplate(params.textDocument.uri);
+
+    lsInfo.languageService.getTypescriptLanguageService()
+    lsInfo.languageService.getDefinitionAtPosition
+
+    debugger
+
+    return null
   }
 
   private onCompletion(params: lsp.CompletionParams): lsp.CompletionItem[]|null {

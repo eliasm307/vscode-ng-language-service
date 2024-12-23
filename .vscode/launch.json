@@ -9,11 +9,11 @@
       "runtimeExecutable": "${execPath}",
       "args": [
         "--disable-extensions",
-        "--extensionDevelopmentPath=${workspaceFolder}"
+        "--extensionDevelopmentPath=${workspaceFolder}",
+        "/home/emangoro/git-repos/front/libs/admin-global-iframe"
       ],
-      "outFiles": [
-        "${workspaceFolder}/bazel-bin/client/src/*.js"
-      ],
+      "outFiles": ["${workspaceFolder}/bazel-bin/client/src/*.js"],
+      "sourceMaps": true,
       "preLaunchTask": {
         "type": "npm",
         "script": "watch"
@@ -24,9 +24,7 @@
       "request": "launch",
       "name": "Launch Prod Client",
       "runtimeExecutable": "${execPath}",
-      "args": [
-        "--extensionDevelopmentPath=${workspaceFolder}/bazel-bin/npm"
-      ],
+      "args": ["--extensionDevelopmentPath=${workspaceFolder}/bazel-bin/npm"],
       "sourceMaps": false,
       "preLaunchTask": "build vsix"
     },
@@ -36,9 +34,7 @@
       "name": "Attach to Server",
       "port": 6009,
       "restart": true,
-      "outFiles": [
-        "${workspaceFolder}/bazel-bin/server/src/*.js"
-      ]
+      "outFiles": ["${workspaceFolder}/bazel-bin/server/src/*.js"]
     },
     {
       "type": "node",
@@ -46,20 +42,14 @@
       "name": "Attach to Jasmine",
       "port": 9229,
       "restart": true,
-      "outFiles": [
-        "${workspaceFolder}/bazel-bin/**/*.js"
-      ],
+      "outFiles": ["${workspaceFolder}/bazel-bin/**/*.js"]
     },
     {
       "name": "Integration test: Attach to server",
       "port": 9330,
       "request": "attach",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
-      "outFiles": [
-        "${workspaceFolder}/bazel-bin/integration/lsp/*.js"
-      ],
+      "skipFiles": ["<node_internals>/**"],
+      "outFiles": ["${workspaceFolder}/bazel-bin/integration/lsp/*.js"],
       "type": "node"
     },
     {
@@ -73,9 +63,7 @@
         "--extensionTestsPath=${workspaceFolder}/bazel-bin/integration/e2e/jasmine",
         "${workspaceFolder}/integration/project"
       ],
-      "outFiles": [
-        "${workspaceFolder}/bazel-bin/integration/e2e/*.js"
-      ],
+      "outFiles": ["${workspaceFolder}/bazel-bin/integration/e2e/*.js"],
       "preLaunchTask": {
         "type": "npm",
         "script": "compile:integration"
@@ -85,10 +73,7 @@
   "compounds": [
     {
       "name": "Dev Client + Server",
-      "configurations": [
-        "Launch Dev Client",
-        "Attach to Server"
-      ]
+      "configurations": ["Launch Dev Client", "Attach to Server"]
     }
   ]
 }

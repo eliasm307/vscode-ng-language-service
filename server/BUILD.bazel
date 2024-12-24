@@ -54,6 +54,7 @@ esbuild(
         "vscode-jsonrpc",
         "vscode-languageserver-textdocument",
         "vscode-html-languageservice",
+        "@angular-eslint/bundled-angular-compiler",
     ],
     format = "cjs",
     # Do not enable minification. It seems to break the extension on Windows (with WSL). See #1198.

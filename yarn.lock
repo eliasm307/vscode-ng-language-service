@@ -162,6 +162,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@angular-eslint/bundled-angular-compiler@npm:19.0.1":
+  version: 19.0.1
+  resolution: "@angular-eslint/bundled-angular-compiler@npm:19.0.1"
+  checksum: 10c0/80a44e5711424a98ba49736ac9101a314f2b9f9eb49e411113f337ea4822ec1823af143438f7d5a8ba50fc63deec5059dc8847fc5c4ba78372fc1b99c6cdc5ef
+  languageName: node
+  linkType: hard
+
 "@angular/benchpress@npm:0.3.0":
   version: 0.3.0
   resolution: "@angular/benchpress@npm:0.3.0"
@@ -169,6 +176,20 @@ __metadata:
     "@angular/core": "npm:^13.0.0 || ^14.0.0-0"
     reflect-metadata: "npm:^0.1.13"
   checksum: 10c0/a18dc93aa79a776a691b66127f961b65e268e443844c48eaf4c0f71fc2407779881459a893fb5a0a6a22bda5ec432ebf711817ca6eed5d67f343ae5509a9438a
+  languageName: node
+  linkType: hard
+
+"@angular/compiler@npm:19.0.1":
+  version: 19.0.1
+  resolution: "@angular/compiler@npm:19.0.1"
+  dependencies:
+    tslib: "npm:^2.3.0"
+  peerDependencies:
+    "@angular/core": 19.0.1
+  peerDependenciesMeta:
+    "@angular/core":
+      optional: true
+  checksum: 10c0/e5588d14fe1d829f1bede996f33a5c7c48c77cb02954085f18f5b1d60fbfe2c7212c48febed33f7b4d457b107af4a58a866f2c3f5cb3751766f44fa4aec7ab25
   languageName: node
   linkType: hard
 
@@ -237,7 +258,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@angular/language-service@npm:^19.0.1":
+"@angular/language-service@npm:19.0.1":
   version: 19.0.1
   resolution: "@angular/language-service@npm:19.0.1"
   checksum: 10c0/7a7de9d05e06466bfabefefbe38e76d9f01a02f76af34c57c741a2379cc5677fa97d1d2bebe321101ce419bcbb65a5d9d5096f31a826f47f13c838368ea2ff22
@@ -7677,9 +7698,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "ng-template@workspace:."
   dependencies:
+    "@angular-eslint/bundled-angular-compiler": "npm:19.0.1"
+    "@angular/compiler": "npm:19.0.1"
     "@angular/core": "npm:^19.0.1"
     "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#262cb3bb487e8dddb3c404f4f2c8b34a9a1f14c2"
-    "@angular/language-service": "npm:^19.0.1"
+    "@angular/language-service": "npm:19.0.1"
     "@bazel/bazelisk": "npm:1.18.0"
     "@bazel/ibazel": "npm:0.16.2"
     "@types/jasmine": "npm:3.10.7"

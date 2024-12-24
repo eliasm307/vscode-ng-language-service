@@ -12,6 +12,8 @@ ts_project(
     ],
     deps = [
         "//:node_modules/@angular/language-service",
+        "//:node_modules/@angular-eslint/bundled-angular-compiler",
+        "//:node_modules/@angular/compiler",
         "//:node_modules/@types/node",
         "//:node_modules/typescript",
         "//:node_modules/vscode-html-languageservice",

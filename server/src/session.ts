@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplyRefactoringResult, isNgLanguageService, NgLanguageService, PluginConfig} from '@angular/language-service/api';
+import {parseTemplate, tmplAstVisitAll, type TmplAstBoundAttribute, type TmplAstBoundEvent, type TmplAstBoundText, type TmplAstContent, type TmplAstDeferredBlock, type TmplAstDeferredBlockError, type TmplAstDeferredBlockLoading, type TmplAstDeferredBlockPlaceholder, type TmplAstDeferredTrigger, type TmplAstElement, type TmplAstForLoopBlock, type TmplAstForLoopBlockEmpty, type TmplAstIcu, type TmplAstIfBlock, type TmplAstIfBlockBranch, type TmplAstLetDeclaration, type TmplAstNode, type TmplAstReference, type TmplAstSwitchBlock, type TmplAstSwitchBlockCase, type TmplAstTemplate, type TmplAstText, type TmplAstTextAttribute, type TmplAstUnknownBlock, type TmplAstVariable} from '@angular-eslint/bundled-angular-compiler';
+import {ApplyRefactoringResult, isNgLanguageService, NgLanguageService, PluginConfig,} from '@angular/language-service/api';
 import * as ts from 'typescript/lib/tsserverlibrary';
 import {promisify} from 'util';
 import {getLanguageService as getHTMLLanguageService} from 'vscode-html-languageservice';
@@ -784,7 +785,7 @@ export class Session {
           prepareProvider: true,
         },
         hoverProvider: true,
-        // documentSymbolProvider: true,
+        documentSymbolProvider: true,
         signatureHelpProvider: {
           triggerCharacters: ['(', ','],
           retriggerCharacters: [','],
@@ -1184,6 +1185,7 @@ export class Session {
   }
 
   private onHover(params: lsp.TextDocumentPositionParams): lsp.Hover|null {
+    debugger
     const lsInfo = this.getLSAndScriptInfo(params.textDocument);
     if (lsInfo === null) {
       return null;
@@ -1218,13 +1220,56 @@ export class Session {
   }
 
   private onDocumentSymbol(params: lsp.DocumentSymbolParams): lsp.DocumentSymbol[]|null {
+    debugger
     const lsInfo = this.getLSAndScriptInfo(params.textDocument);
     if (lsInfo === null) {
       return null;
     }
 
-    const componentLocations =
-        lsInfo.languageService.getComponentLocationsForTemplate(params.textDocument.uri);
+    // get file text
+    const text =
+        lsInfo.scriptInfo.getSnapshot().getText(0, lsInfo.scriptInfo.getSnapshot().getLength())
+
+
+    const x = parseTemplate(text, params.textDocument.uri)
+
+    const nodes: TmplAstNode[] = []
+    debugger
+
+    tmplAstVisitAll(
+        {
+          visit(node: TmplAstNode) {
+            nodes.push(node)
+          },
+          visitElement(element: TmplAstElement) {},
+          visitTemplate(template: TmplAstTemplate) {},
+          visitContent(content: TmplAstContent) {},
+          visitVariable(variable: TmplAstVariable) {},
+          visitReference(reference: TmplAstReference) {},
+          visitTextAttribute(attribute: TmplAstTextAttribute) {},
+          visitBoundAttribute(attribute: TmplAstBoundAttribute) {},
+          visitBoundEvent(attribute: TmplAstBoundEvent) {},
+          visitText(text: TmplAstText) {},
+          visitBoundText(text: TmplAstBoundText) {},
+          visitIcu(icu: TmplAstIcu) {},
+          visitDeferredBlock(deferred: TmplAstDeferredBlock) {},
+          visitDeferredBlockPlaceholder(block: TmplAstDeferredBlockPlaceholder) {},
+          visitDeferredBlockError(block: TmplAstDeferredBlockError) {},
+          visitDeferredBlockLoading(block: TmplAstDeferredBlockLoading) {},
+          visitDeferredTrigger(trigger: TmplAstDeferredTrigger) {},
+          visitSwitchBlock(block: TmplAstSwitchBlock) {},
+          visitSwitchBlockCase(block: TmplAstSwitchBlockCase) {},
+          visitForLoopBlock(block: TmplAstForLoopBlock) {},
+          visitForLoopBlockEmpty(block: TmplAstForLoopBlockEmpty) {},
+          visitIfBlock(block: TmplAstIfBlock) {},
+          visitIfBlockBranch(block: TmplAstIfBlockBranch) {},
+          visitUnknownBlock(block: TmplAstUnknownBlock) {},
+          visitLetDeclaration(decl: TmplAstLetDeclaration) {},
+        },
+        x.nodes)
+
+    debugger
+
 
     lsInfo.languageService.getTypescriptLanguageService()
     lsInfo.languageService.getDefinitionAtPosition
@@ -1281,6 +1326,7 @@ export class Session {
       return item;
     }
     const {languageService, scriptInfo} = lsInfo;
+
 
     const offset = lspPositionToTsPosition(scriptInfo, position);
     const details = languageService.getCompletionEntryDetails(

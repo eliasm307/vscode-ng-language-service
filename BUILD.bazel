@@ -46,6 +46,9 @@ npm_package(
         # don't have to run an additional `npm install` action to create a node_modules within the
         # //:npm npm_package where the vsce build takes place.
         ":node_modules/@angular/language-service",
+        ":node_modules/@angular-eslint/bundled-angular-compiler",
+        ":node_modules/@angular/compiler",
+        ":node_modules/tslib",
         ":node_modules/balanced-match",
         ":node_modules/brace-expansion",
         ":node_modules/concat-map",

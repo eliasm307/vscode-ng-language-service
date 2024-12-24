@@ -785,7 +785,7 @@ export class Session {
           prepareProvider: true,
         },
         hoverProvider: true,
-        documentSymbolProvider: true,
+        documentSymbolProvider: {label: 'Angular'},
         signatureHelpProvider: {
           triggerCharacters: ['(', ','],
           retriggerCharacters: [','],
@@ -1185,7 +1185,7 @@ export class Session {
   }
 
   private onHover(params: lsp.TextDocumentPositionParams): lsp.Hover|null {
-    debugger
+    // debugger
     const lsInfo = this.getLSAndScriptInfo(params.textDocument);
     if (lsInfo === null) {
       return null;
@@ -1196,7 +1196,7 @@ export class Session {
     if (!info) {
       return null;
     }
-    debugger
+    // debugger
     const {kind, kindModifiers, textSpan, displayParts, documentation, tags} = info;
     let desc = kindModifiers ? kindModifiers + ' ' : '';
     if (displayParts && displayParts.length > 0) {
@@ -1231,52 +1231,130 @@ export class Session {
         lsInfo.scriptInfo.getSnapshot().getText(0, lsInfo.scriptInfo.getSnapshot().getLength())
 
 
-    const x = parseTemplate(text, params.textDocument.uri)
+    const template = parseTemplate(text, params.textDocument.uri)
 
-    const nodes: TmplAstNode[] = []
-    debugger
+    const symbols: lsp.DocumentSymbol[] = []
+    // debugger
 
     tmplAstVisitAll(
         {
           visit(node: TmplAstNode) {
-            nodes.push(node)
+            // nodes.push(node)
           },
-          visitElement(element: TmplAstElement) {},
-          visitTemplate(template: TmplAstTemplate) {},
-          visitContent(content: TmplAstContent) {},
-          visitVariable(variable: TmplAstVariable) {},
-          visitReference(reference: TmplAstReference) {},
-          visitTextAttribute(attribute: TmplAstTextAttribute) {},
-          visitBoundAttribute(attribute: TmplAstBoundAttribute) {},
-          visitBoundEvent(attribute: TmplAstBoundEvent) {},
-          visitText(text: TmplAstText) {},
-          visitBoundText(text: TmplAstBoundText) {},
-          visitIcu(icu: TmplAstIcu) {},
-          visitDeferredBlock(deferred: TmplAstDeferredBlock) {},
-          visitDeferredBlockPlaceholder(block: TmplAstDeferredBlockPlaceholder) {},
-          visitDeferredBlockError(block: TmplAstDeferredBlockError) {},
-          visitDeferredBlockLoading(block: TmplAstDeferredBlockLoading) {},
-          visitDeferredTrigger(trigger: TmplAstDeferredTrigger) {},
-          visitSwitchBlock(block: TmplAstSwitchBlock) {},
-          visitSwitchBlockCase(block: TmplAstSwitchBlockCase) {},
-          visitForLoopBlock(block: TmplAstForLoopBlock) {},
-          visitForLoopBlockEmpty(block: TmplAstForLoopBlockEmpty) {},
-          visitIfBlock(block: TmplAstIfBlock) {},
-          visitIfBlockBranch(block: TmplAstIfBlockBranch) {},
-          visitUnknownBlock(block: TmplAstUnknownBlock) {},
-          visitLetDeclaration(decl: TmplAstLetDeclaration) {},
+          visitElement(element: TmplAstElement) {
+            if (!element.name.includes('-')) {
+              return
+            }
+
+            symbols.push({
+              kind: lsp.SymbolKind.Object,
+              name: element.name,
+              detail: element.name + ' detail',
+              range: {
+                start: {
+                  line: element.sourceSpan.start.line + 1,
+                  character: element.sourceSpan.start.col + 1,
+                },
+                end: {
+                  line: element.sourceSpan.end.line + 1,
+                  character: element.sourceSpan.end.col + 1,
+                },
+              },
+              selectionRange: {
+                start: {
+                  line: element.startSourceSpan.start.line + 1,
+                  character: element.startSourceSpan.start.col + 2,
+                },
+                end: {
+                  line: element.startSourceSpan.end.line + 1,
+                  character: element.startSourceSpan.end.col + 1,
+                },
+              },
+              tags: [lsp.SymbolTag.Deprecated],
+              deprecated: true,
+            })
+          },
+          visitTemplate(template: TmplAstTemplate) {
+            debugger
+          },
+          visitContent(content: TmplAstContent) {
+            debugger
+          },
+          visitVariable(variable: TmplAstVariable) {
+            debugger
+          },
+          visitReference(reference: TmplAstReference) {
+            debugger
+          },
+          visitTextAttribute(attribute: TmplAstTextAttribute) {
+            debugger
+          },
+          visitBoundAttribute(attribute: TmplAstBoundAttribute) {
+            debugger
+          },
+          visitBoundEvent(attribute: TmplAstBoundEvent) {
+            debugger
+          },
+          visitText(text: TmplAstText) {
+            debugger
+          },
+          visitBoundText(text: TmplAstBoundText) {
+            debugger
+          },
+          visitIcu(icu: TmplAstIcu) {
+            debugger
+          },
+          visitDeferredBlock(deferred: TmplAstDeferredBlock) {
+            debugger
+          },
+          visitDeferredBlockPlaceholder(block: TmplAstDeferredBlockPlaceholder) {
+            debugger
+          },
+          visitDeferredBlockError(block: TmplAstDeferredBlockError) {
+            debugger
+          },
+          visitDeferredBlockLoading(block: TmplAstDeferredBlockLoading) {
+            debugger
+          },
+          visitDeferredTrigger(trigger: TmplAstDeferredTrigger) {
+            debugger
+          },
+          visitSwitchBlock(block: TmplAstSwitchBlock) {
+            debugger
+          },
+          visitSwitchBlockCase(block: TmplAstSwitchBlockCase) {
+            debugger
+          },
+          visitForLoopBlock(block: TmplAstForLoopBlock) {
+            debugger
+          },
+          visitForLoopBlockEmpty(block: TmplAstForLoopBlockEmpty) {
+            debugger
+          },
+          visitIfBlock(block: TmplAstIfBlock) {
+            debugger
+          },
+          visitIfBlockBranch(block: TmplAstIfBlockBranch) {
+            debugger
+          },
+          visitUnknownBlock(block: TmplAstUnknownBlock) {
+            debugger
+          },
+          visitLetDeclaration(decl: TmplAstLetDeclaration) {
+            debugger
+          },
         },
-        x.nodes)
+        template.nodes)
 
     debugger
 
 
-    lsInfo.languageService.getTypescriptLanguageService()
-    lsInfo.languageService.getDefinitionAtPosition
+    // lsInfo.languageService.getTypescriptLanguageService()
+    // lsInfo.languageService.getDefinitionAtPosition
 
-    debugger
+    // debugger
 
-    return null
+    return symbols
   }
 
   private onCompletion(params: lsp.CompletionParams): lsp.CompletionItem[]|null {

@@ -1219,7 +1219,7 @@ export class Session {
     };
   }
 
-  private onDocumentSymbol(params: lsp.DocumentSymbolParams): lsp.DocumentSymbol[]|null {
+  private onDocumentSymbol(params: lsp.DocumentSymbolParams): lsp.SymbolInformation[]|null {
     debugger
     const lsInfo = this.getLSAndScriptInfo(params.textDocument);
     if (lsInfo === null) {
@@ -1233,7 +1233,7 @@ export class Session {
 
     const template = parseTemplate(text, params.textDocument.uri)
 
-    const symbols: lsp.DocumentSymbol[] = []
+    const symbols: lsp.SymbolInformation[] = []
     // debugger
 
     tmplAstVisitAll(
@@ -1249,26 +1249,18 @@ export class Session {
             symbols.push({
               kind: lsp.SymbolKind.Object,
               name: element.name,
-              detail: element.name + ' detail',
-              range: {
-                start: {
-                  line: element.sourceSpan.start.line + 1,
-                  character: element.sourceSpan.start.col + 1,
-                },
-                end: {
-                  line: element.sourceSpan.end.line + 1,
-                  character: element.sourceSpan.end.col + 1,
-                },
-              },
-              selectionRange: {
-                start: {
-                  line: element.startSourceSpan.start.line + 1,
-                  character: element.startSourceSpan.start.col + 2,
-                },
-                end: {
-                  line: element.startSourceSpan.end.line + 1,
-                  character: element.startSourceSpan.end.col + 1,
-                },
+              location: {
+                uri: params.textDocument.uri,
+                range: {
+                  start: {
+                    line: element.startSourceSpan.start.line,
+                    character: element.startSourceSpan.start.col + 1,
+                  },
+                  end: {
+                    line: element.startSourceSpan.end.line,
+                    character: element.startSourceSpan.end.col,
+                  },
+                }
               },
               tags: [lsp.SymbolTag.Deprecated],
               deprecated: true,

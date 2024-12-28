@@ -210,7 +210,6 @@ export class Session {
     conn.onSignatureHelp(p => this.onSignatureHelp(p));
     conn.onCodeAction(p => this.onCodeAction(p));
     conn.onCodeActionResolve(async p => await this.onCodeActionResolve(p));
-    conn.onDocumentSymbol((p) => this.onDocumentSymbol(p));
   }
 
   private onCodeAction(params: lsp.CodeActionParams): lsp.CodeAction[]|null {
@@ -701,6 +700,10 @@ export class Session {
         console.time(label);
       }
       const diagnostics = result.languageService.getSemanticDiagnostics(fileName);
+
+      const deprecatedDiagnostics =
+          this.getTemplateDeprecatedDiagnostics(fileName, result.scriptInfo)
+
       if (isDebugMode) {
         console.timeEnd(label);
       }
@@ -708,7 +711,8 @@ export class Session {
       // not be updated.
       this.connection.sendDiagnostics({
         uri: filePathToUri(fileName),
-        diagnostics: diagnostics.map(d => tsDiagnosticToLspDiagnostic(d, result.scriptInfo)),
+        diagnostics: diagnostics.map(d => tsDiagnosticToLspDiagnostic(d, result.scriptInfo))
+                         .concat(deprecatedDiagnostics)
       });
       if (this.diagnosticsTimeout) {
         // There is a pending request to check diagnostics for all open files,
@@ -1219,21 +1223,20 @@ export class Session {
     };
   }
 
-  private onDocumentSymbol(params: lsp.DocumentSymbolParams): lsp.SymbolInformation[]|null {
+  private getTemplateDeprecatedDiagnostics(fileName: string, scriptInfo: ts.server.ScriptInfo):
+      lsp.Diagnostic[] {
     debugger
-    const lsInfo = this.getLSAndScriptInfo(params.textDocument);
-    if (lsInfo === null) {
-      return null;
+
+    if (!fileName.endsWith('.html')) {
+      return []  // only check html files
     }
 
     // get file text
-    const text =
-        lsInfo.scriptInfo.getSnapshot().getText(0, lsInfo.scriptInfo.getSnapshot().getLength())
+    const text = scriptInfo.getSnapshot().getText(0, scriptInfo.getSnapshot().getLength())
 
+    const template = parseTemplate(text, fileName)
 
-    const template = parseTemplate(text, params.textDocument.uri)
-
-    const symbols: lsp.SymbolInformation[] = []
+    const diagnostics: lsp.Diagnostic[] = []
     // debugger
 
     tmplAstVisitAll(
@@ -1246,24 +1249,19 @@ export class Session {
               return
             }
 
-            symbols.push({
-              kind: lsp.SymbolKind.Object,
-              name: element.name,
-              location: {
-                uri: params.textDocument.uri,
-                range: {
-                  start: {
-                    line: element.startSourceSpan.start.line,
-                    character: element.startSourceSpan.start.col + 1,
-                  },
-                  end: {
-                    line: element.startSourceSpan.end.line,
-                    character: element.startSourceSpan.end.col,
-                  },
-                }
+            diagnostics.push({
+              message: 'This component is deprecated',
+              tags: [lsp.DiagnosticTag.Deprecated],
+              range: {
+                start: {
+                  line: element.startSourceSpan.start.line,
+                  character: element.startSourceSpan.start.col,
+                },
+                end: {
+                  line: element.startSourceSpan.end.line,
+                  character: element.startSourceSpan.end.col,
+                },
               },
-              tags: [lsp.SymbolTag.Deprecated],
-              deprecated: true,
             })
           },
           visitTemplate(template: TmplAstTemplate) {
@@ -1346,7 +1344,7 @@ export class Session {
 
     // debugger
 
-    return symbols
+    return diagnostics
   }
 
   private onCompletion(params: lsp.CompletionParams): lsp.CompletionItem[]|null {
